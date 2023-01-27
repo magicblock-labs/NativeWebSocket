@@ -125,6 +125,8 @@ namespace NativeWebSocket.implementation.WebGL
           return Task.CompletedTask;
         }
 
+        public void DispatchMessageQueue() { }
+
         public WebSocketState State {
           get {
             int state = WebSocketGetState (this.instanceId);

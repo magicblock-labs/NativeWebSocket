@@ -119,6 +119,8 @@ namespace NativeWebSocket
         Task Close();
         Task Send(Byte[] bytes);
         Task SendText(string message);
+
+        void DispatchMessageQueue();
     }
 
     public static class WebSocketHelpers
