@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+        
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <RootNamespace>NativeWebSocket</RootNamespace>
+        <PackageId>native-websocket</PackageId>
+        <Platform>AnyCPU</Platform>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Unity3D.SDK" Version="2021.*" PrivateAssets="all" />
+        <PackageReference Include="websocket-sharp-latest" Version="1.*" />
+    </ItemGroup>
+
+</Project>
