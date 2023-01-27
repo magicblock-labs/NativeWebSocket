@@ -6,6 +6,7 @@
         <PackageId>native-websocket</PackageId>
         <Platform>AnyCPU</Platform>
         <Version>0.0.1-Pre</Version>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
 
     <ItemGroup>
