@@ -4,6 +4,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using System.Collections;
+using Random = System.Random;
+
+public class WebSocketDispatcher : MonoBehaviour
+{
+    public NativeWebSocket.IWebSocket WebSocket;
+    
+    private void Update()
+    {
+        WebSocket?.DispatchMessageQueue();
+    }
+}
 
 public class MainThreadUtil : MonoBehaviour
 {
@@ -22,6 +33,11 @@ public class MainThreadUtil : MonoBehaviour
     {
         synchronizationContext.Post(_ => Instance.StartCoroutine(
                     waitForUpdate), null);
+    }
+    
+    public static void Run(Action action)
+    {
+        synchronizationContext.Post(_ => action.Invoke(), null);
     }
 
     void Awake()
@@ -211,7 +227,20 @@ namespace NativeWebSocket
             }
             else
             {
-                return new NativeWebSocket.implementation.NoWebGL.WebSocket(url);
+                var ws = new NativeWebSocket.implementation.NoWebGL.WebSocket(url);
+                WebSocketDispatcher wsObj = null;
+                ws.OnOpen += () =>
+                {
+                    MainThreadUtil.Run( () =>
+                    {
+                        wsObj = new GameObject("WebSocketDispatcher" + new Random().Next())
+                            .AddComponent<WebSocketDispatcher>();
+                        wsObj.WebSocket = ws;
+                    });
+                    
+                };
+                ws.OnClose += (code) => GameObject.Destroy(wsObj.gameObject);
+                return ws;
             }
         }
     }
