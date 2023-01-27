@@ -2,8 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NativeWebSocket", "NativeWebSocket\NativeWebSocket.csproj", "{34D05E7F-1641-4876-A287-D37BD061A3A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NativeWebSocket.Test", "test\NativeWebSocket.Test\NativeWebSocket.Test.csproj", "{E9F0EC75-8E72-4ACE-BCAB-3E42BDA82C7C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

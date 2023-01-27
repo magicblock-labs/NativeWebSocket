@@ -5,6 +5,7 @@
         <RootNamespace>NativeWebSocket</RootNamespace>
         <PackageId>native-websocket</PackageId>
         <Platform>AnyCPU</Platform>
+        <Version>0.0.1-Pre</Version>
     </PropertyGroup>
 
     <ItemGroup>
