@@ -5,7 +5,8 @@
         <RootNamespace>NativeWebSocket</RootNamespace>
         <PackageId>native-websocket</PackageId>
         <Platform>AnyCPU</Platform>
-        <Version>0.0.1-rc1</Version>
+        <Version>0.0.1</Version>
+        <RepositoryUrl>https://github.com/garbles-labs/NativeWebSocket</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
 
