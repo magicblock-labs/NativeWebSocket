@@ -24,6 +24,7 @@ public class MainThreadUtil : MonoBehaviour
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     public static void Setup()
     {
+        if(Instance != null) return;
         Instance = new GameObject("MainThreadUtil")
             .AddComponent<MainThreadUtil>();
         synchronizationContext = SynchronizationContext.Current;

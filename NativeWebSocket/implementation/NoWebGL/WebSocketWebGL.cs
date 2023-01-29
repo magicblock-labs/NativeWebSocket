@@ -51,10 +51,11 @@ namespace NativeWebSocket.implementation.NoWebGL
 
         public Task Connect()
         {
-
+            var connectionTask = new TaskCompletionSource<object>();
             sharpWebSocket = new WebSocketSharp.WebSocket(websocketUrl,subprotocols );
             sharpWebSocket.OnOpen += (sender, args) =>
             {
+                connectionTask.SetResult(null);
                 OnOpen?.Invoke();
             };
             sharpWebSocket.OnMessage += (sender, args) =>
@@ -71,7 +72,7 @@ namespace NativeWebSocket.implementation.NoWebGL
             };
 
             sharpWebSocket.ConnectAsync();
-            return Task.CompletedTask;
+            return connectionTask.Task;
         }
 
         public Task Close()
