@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -28,6 +29,8 @@ namespace NativeWebSocket.implementation.WebGL
         public event WebSocketMessageEventHandler OnMessage;
         public event WebSocketErrorEventHandler OnError;
         public event WebSocketCloseEventHandler OnClose;
+
+        private TaskCompletionSource<object> _connectionTask;
 
         public WebSocket (string url, Dictionary<string, string> headers = null) {
           if (!WebSocketFactory.isInitialized) {
@@ -73,16 +76,17 @@ namespace NativeWebSocket.implementation.WebGL
         }
 
         public int GetInstanceId () {
-          return this.instanceId;
+          return instanceId;
         }
 
         public Task Connect () {
-          int ret = WebSocketConnect (this.instanceId);
+          _connectionTask = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
+          int ret = WebSocketConnect (instanceId);
 
           if (ret < 0)
             throw WebSocketHelpers.GetErrorMessageFromCode (ret, null);
 
-          return Task.CompletedTask;
+          return _connectionTask.Task;
         }
 
         public void CancelConnection () {
@@ -90,7 +94,7 @@ namespace NativeWebSocket.implementation.WebGL
 		        Close (WebSocketCloseCode.Abnormal);
         }
         public Task Close () {
-          int ret = WebSocketClose (this.instanceId, (int) WebSocketCloseCode.Normal, null);
+          int ret = WebSocketClose (instanceId, (int) WebSocketCloseCode.Normal, null);
 
           if (ret < 0)
             throw WebSocketHelpers.GetErrorMessageFromCode (ret, null);
@@ -153,20 +157,24 @@ namespace NativeWebSocket.implementation.WebGL
           }
         }
 
-        public void DelegateOnOpenEvent () {
-          this.OnOpen?.Invoke ();
+        public void DelegateOnOpenEvent ()
+        {
+          Console.WriteLine("On Open");
+          MainThreadUtil.Run(() => _connectionTask.SetResult(null));
+          Console.WriteLine("On Open sync");
+          OnOpen?.Invoke ();
         }
 
         public void DelegateOnMessageEvent (byte[] data) {
-          this.OnMessage?.Invoke (data);
+          OnMessage?.Invoke (data);
         }
 
         public void DelegateOnErrorEvent (string errorMsg) {
-          this.OnError?.Invoke (errorMsg);
+          OnError?.Invoke (errorMsg);
         }
 
         public void DelegateOnCloseEvent (int closeCode) {
-          this.OnClose?.Invoke (WebSocketHelpers.ParseCloseCodeEnum (closeCode));
+          OnClose?.Invoke (WebSocketHelpers.ParseCloseCodeEnum (closeCode));
         }
 
     }
