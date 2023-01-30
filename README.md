@@ -14,6 +14,21 @@ Drag into Unity the 3 needed files:
 
 The files are available at the latest release: https://github.com/garbles-labs/NativeWebSocket/releases
 
+### WebGL
+
+If you are compiling for WebGL, add this script to any object, e.g. the main camera.
+This ensure that the websockets callback are always executed promtly, on the main thread.
+
+```csharp
+public class SetupMainThread : MonoBehaviour
+{   
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    public static void Setup()
+    {
+        MainThreadUtil.Setup();
+    }
+}
+```
 
 ## How to Use:
 
