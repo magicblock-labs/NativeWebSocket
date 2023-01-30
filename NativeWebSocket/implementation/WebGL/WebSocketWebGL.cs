@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -159,9 +158,7 @@ namespace NativeWebSocket.implementation.WebGL
 
         public void DelegateOnOpenEvent ()
         {
-          Console.WriteLine("On Open");
           MainThreadUtil.Run(() => _connectionTask.SetResult(null));
-          Console.WriteLine("On Open sync");
           OnOpen?.Invoke ();
         }
 
