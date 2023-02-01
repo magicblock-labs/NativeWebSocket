@@ -6,13 +6,16 @@ Both packages has been made compatible with Unity, compiling them for dotnet 2.0
 
 ## How to Install
 
-Drag into Unity the 3 needed files:
+Drag into Unity the 4 needed files:
 
 - NativeWebSocket.dll
 - NativeWebSocket.jslib
 - websocket-sharp-latest.dll
+- NativeWebSocket.mm
 
-The files are available at the latest release: https://github.com/garbles-labs/NativeWebSocket/releases
+The files are available at the latest release: https://github.com/garbles-labs/NativeWebSocket/releases.
+
+NativeWebSocket.mm needs to placed in Plugins/iOS folder.
 
 ### WebGL
 
