@@ -11,7 +11,7 @@ Drag into Unity the 4 needed files:
 - NativeWebSocket.dll
 - NativeWebSocket.jslib
 - websocket-sharp-latest.dll
-- NativeWebSocket.mm
+- NativeWebSocket.c
 
 The files are available at the latest release: https://github.com/garbles-labs/NativeWebSocket/releases.
 
