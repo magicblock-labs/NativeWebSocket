@@ -15,8 +15,6 @@ Drag into Unity the 4 needed files:
 
 The files are available at the latest release: https://github.com/garbles-labs/NativeWebSocket/releases.
 
-NativeWebSocket.mm needs to placed in Plugins/iOS folder.
-
 ### WebGL
 
 If you are compiling for WebGL, add this script to any object, e.g. the main camera.
