@@ -31,6 +31,7 @@ namespace NativeWebSocket.implementation.NoWebGL
         {
             get
             {
+                if(sharpWebSocket == null) return WebSocketState.None;
                 switch (sharpWebSocket.ReadyState)
                 {
                     case WebSocketSharp.WebSocketState.New:
@@ -49,13 +50,13 @@ namespace NativeWebSocket.implementation.NoWebGL
             }
         }
 
-        public Task Connect()
+        public Task Connect(bool awaitConnection = true)
         {
             var connectionTask = new TaskCompletionSource<object>();
-            sharpWebSocket = new WebSocketSharp.WebSocket(websocketUrl,subprotocols );
+            sharpWebSocket = new WebSocketSharp.WebSocket(websocketUrl, subprotocols);
             sharpWebSocket.OnOpen += (sender, args) =>
             {
-                connectionTask.SetResult(null);
+                connectionTask.TrySetResult(null);
                 OnOpen?.Invoke();
             };
             sharpWebSocket.OnMessage += (sender, args) =>
@@ -72,7 +73,7 @@ namespace NativeWebSocket.implementation.NoWebGL
             };
 
             sharpWebSocket.ConnectAsync();
-            return connectionTask.Task;
+            return awaitConnection ? connectionTask.Task : Task.CompletedTask;
         }
 
         public Task Close()

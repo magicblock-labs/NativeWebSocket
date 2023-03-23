@@ -120,7 +120,8 @@ namespace NativeWebSocket
         Connecting,
         Open,
         Closing,
-        Closed
+        Closed,
+        None
     }
 
     public interface IWebSocket
@@ -132,7 +133,7 @@ namespace NativeWebSocket
 
         WebSocketState State { get; }
 
-        Task Connect();
+        Task Connect(bool awaitConnection = true);
         Task Close();
         Task Send(Byte[] bytes);
         Task SendText(string message);
@@ -220,29 +221,31 @@ namespace NativeWebSocket
     {
         
 
-        public static IWebSocket Create(string url)
+        public static IWebSocket Create(string url, string subProtocol = null)
         {
             if (RuntimePlatforms.IsWebGL())
             {
-                return new NativeWebSocket.implementation.WebGL.WebSocket(url);
+                return subProtocol != null ? 
+                    new NativeWebSocket.implementation.WebGL.WebSocket(url, subProtocol) :
+                    new NativeWebSocket.implementation.WebGL.WebSocket(url);
             }
-            else
+
+            var ws = subProtocol != null ? 
+                new NativeWebSocket.implementation.NoWebGL.WebSocket(url, subProtocol) :
+                new NativeWebSocket.implementation.NoWebGL.WebSocket(url);
+            WebSocketDispatcher wsObj = null;
+            ws.OnOpen += () =>
             {
-                var ws = new NativeWebSocket.implementation.NoWebGL.WebSocket(url);
-                WebSocketDispatcher wsObj = null;
-                ws.OnOpen += () =>
+                MainThreadUtil.Run( () =>
                 {
-                    MainThreadUtil.Run( () =>
-                    {
-                        wsObj = new GameObject("WebSocketDispatcher" + new Random().Next())
-                            .AddComponent<WebSocketDispatcher>();
-                        wsObj.WebSocket = ws;
-                    });
+                    wsObj = new GameObject("WebSocketDispatcher" + new Random().Next())
+                        .AddComponent<WebSocketDispatcher>();
+                    wsObj.WebSocket = ws;
+                });
                     
-                };
-                ws.OnClose += (code) => GameObject.Destroy(wsObj.gameObject);
-                return ws;
-            }
+            };
+            ws.OnClose += (code) => GameObject.Destroy(wsObj.gameObject);
+            return ws;
         }
     }
 

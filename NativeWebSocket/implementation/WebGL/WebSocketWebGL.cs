@@ -71,21 +71,21 @@ namespace NativeWebSocket.implementation.WebGL
         }
 
         ~WebSocket () {
-          WebSocketFactory.HandleInstanceDestroy (this.instanceId);
+          WebSocketFactory.HandleInstanceDestroy (instanceId);
         }
 
         public int GetInstanceId () {
           return instanceId;
         }
 
-        public Task Connect () {
+        public Task Connect (bool awaitConnection = true) {
           _connectionTask = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
           int ret = WebSocketConnect (instanceId);
 
           if (ret < 0)
             throw WebSocketHelpers.GetErrorMessageFromCode (ret, null);
-
-          return _connectionTask.Task;
+          
+          return awaitConnection ? _connectionTask.Task : Task.CompletedTask;
         }
 
         public void CancelConnection () {
@@ -132,7 +132,7 @@ namespace NativeWebSocket.implementation.WebGL
 
         public WebSocketState State {
           get {
-            int state = WebSocketGetState (this.instanceId);
+            int state = WebSocketGetState (instanceId);
 
             if (state < 0)
               throw WebSocketHelpers.GetErrorMessageFromCode (state, null);
@@ -158,7 +158,7 @@ namespace NativeWebSocket.implementation.WebGL
 
         public void DelegateOnOpenEvent ()
         {
-          MainThreadUtil.Run(() => _connectionTask.SetResult(null));
+          MainThreadUtil.Run(() => _connectionTask.TrySetResult(null));
           OnOpen?.Invoke ();
         }
 

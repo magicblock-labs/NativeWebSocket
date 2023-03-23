@@ -126,5 +126,6 @@ namespace NativeWebSocket.implementation.WebGL
         {
             return new WebSocket(url);
         }
+      
     }
 }
