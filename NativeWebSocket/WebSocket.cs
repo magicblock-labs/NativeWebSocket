@@ -9,7 +9,12 @@ using Random = System.Random;
 public class WebSocketDispatcher : MonoBehaviour
 {
     public NativeWebSocket.IWebSocket WebSocket;
-    
+
+    private void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
+
     private void Update()
     {
         WebSocket?.DispatchMessageQueue();
@@ -220,6 +225,8 @@ namespace NativeWebSocket
     public static class WebSocket
     {
         
+        private static readonly string DispatchGameObjectName = "MagicWebSocketDispatcher123";
+        
 
         public static IWebSocket Create(string url, string subProtocol = null)
         {
@@ -238,7 +245,8 @@ namespace NativeWebSocket
             {
                 MainThreadUtil.Run( () =>
                 {
-                    wsObj = new GameObject("WebSocketDispatcher" + new Random().Next())
+                    if (GameObject.Find(DispatchGameObjectName) != null) return;
+                    wsObj = new GameObject(DispatchGameObjectName)
                         .AddComponent<WebSocketDispatcher>();
                     wsObj.WebSocket = ws;
                 });
