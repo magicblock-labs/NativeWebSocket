@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace NativeWebSocket.implementation.NoWebGL
@@ -13,9 +12,7 @@ namespace NativeWebSocket.implementation.NoWebGL
         private WebSocketSharp.WebSocket sharpWebSocket;
         private string websocketUrl;
         private string[] subprotocols;
-        private List<byte[]> m_MessageList = new List<byte[]>();
-        private readonly object IncomingMessageLock = new object();
-
+        
         public WebSocket(string uri)
         {
             websocketUrl = uri;
@@ -61,7 +58,7 @@ namespace NativeWebSocket.implementation.NoWebGL
             };
             sharpWebSocket.OnMessage += (sender, args) =>
             {
-                m_MessageList.Add(args.RawData);
+                OnMessage?.Invoke(args.RawData);
             };
             sharpWebSocket.OnClose += (sender, args) =>
             {
@@ -92,28 +89,6 @@ namespace NativeWebSocket.implementation.NoWebGL
         {
             sharpWebSocket.Send(message);
             return Task.CompletedTask;
-        }
-
-        public void DispatchMessageQueue()
-        {
-            if (m_MessageList.Count == 0)
-            {
-                return;
-            }
-
-            List<byte[]> messageListCopy;
-
-            lock (IncomingMessageLock)
-            {
-                messageListCopy = new List<byte[]>(m_MessageList);
-                m_MessageList.Clear();
-            }
-
-            var len = messageListCopy.Count;
-            for (int i = 0; i < len; i++)
-            {
-                OnMessage?.Invoke(messageListCopy[i]);
-            }
         }
     }
 }

@@ -4,22 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using System.Collections;
-using Random = System.Random;
-
-public class WebSocketDispatcher : MonoBehaviour
-{
-    public NativeWebSocket.IWebSocket WebSocket;
-
-    private void Awake()
-    {
-        DontDestroyOnLoad(gameObject);
-    }
-
-    private void Update()
-    {
-        WebSocket?.DispatchMessageQueue();
-    }
-}
 
 public class MainThreadUtil : MonoBehaviour
 {
@@ -142,8 +126,6 @@ namespace NativeWebSocket
         Task Close();
         Task Send(Byte[] bytes);
         Task SendText(string message);
-
-        void DispatchMessageQueue();
     }
 
     public static class WebSocketHelpers
@@ -224,10 +206,6 @@ namespace NativeWebSocket
 
     public static class WebSocket
     {
-        
-        private static readonly string DispatchGameObjectName = "MagicWebSocketDispatcher123";
-        
-
         public static IWebSocket Create(string url, string subProtocol = null)
         {
             if (RuntimePlatforms.IsWebGL())
@@ -240,19 +218,6 @@ namespace NativeWebSocket
             var ws = subProtocol != null ? 
                 new NativeWebSocket.implementation.NoWebGL.WebSocket(url, subProtocol) :
                 new NativeWebSocket.implementation.NoWebGL.WebSocket(url);
-            WebSocketDispatcher wsObj = null;
-            ws.OnOpen += () =>
-            {
-                MainThreadUtil.Run( () =>
-                {
-                    if (GameObject.Find(DispatchGameObjectName) != null) return;
-                    wsObj = new GameObject(DispatchGameObjectName)
-                        .AddComponent<WebSocketDispatcher>();
-                    wsObj.WebSocket = ws;
-                });
-                    
-            };
-            ws.OnClose += (code) => GameObject.Destroy(wsObj.gameObject);
             return ws;
         }
     }
