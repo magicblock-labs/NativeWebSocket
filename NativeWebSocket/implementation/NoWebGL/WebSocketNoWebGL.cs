@@ -54,19 +54,20 @@ namespace NativeWebSocket.implementation.NoWebGL
             sharpWebSocket.OnOpen += (sender, args) =>
             {
                 connectionTask.TrySetResult(null);
-                OnOpen?.Invoke();
+                MainThreadUtil.Run(() => OnOpen?.Invoke());
             };
             sharpWebSocket.OnMessage += (sender, args) =>
             {
-                OnMessage?.Invoke(args.RawData);
+                MainThreadUtil.Run(() => OnMessage?.Invoke(args.RawData));
             };
             sharpWebSocket.OnClose += (sender, args) =>
             {
-                OnClose?.Invoke (WebSocketHelpers.ParseCloseCodeEnum (args.Code));
+                MainThreadUtil.Run(() => OnClose?.Invoke (WebSocketHelpers.ParseCloseCodeEnum (args.Code)));
             };
             sharpWebSocket.OnError += (sender, args) =>
             {
                 OnError?.Invoke(args.Message);
+                MainThreadUtil.Run(() => OnError?.Invoke(args.Message));
             };
 
             sharpWebSocket.ConnectAsync();
