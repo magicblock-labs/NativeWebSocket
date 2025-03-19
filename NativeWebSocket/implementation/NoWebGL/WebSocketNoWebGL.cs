@@ -32,7 +32,7 @@ namespace NativeWebSocket.implementation.NoWebGL
                 switch (sharpWebSocket.ReadyState)
                 {
                     case WebSocketSharp.WebSocketState.New:
-                        return WebSocketState.Connecting;
+                        return WebSocketState.None;
                     case WebSocketSharp.WebSocketState.Connecting:
                         return WebSocketState.Connecting;
                     case WebSocketSharp.WebSocketState.Open:
@@ -55,7 +55,6 @@ namespace NativeWebSocket.implementation.NoWebGL
             {
                 connectionTask.TrySetResult(null);
                 OnOpen?.Invoke();
-                MainThreadUtil.Run(() => OnOpen?.Invoke());
             };
             sharpWebSocket.OnMessage += (sender, args) =>
             {
@@ -64,12 +63,10 @@ namespace NativeWebSocket.implementation.NoWebGL
             sharpWebSocket.OnClose += (sender, args) =>
             {
                 OnClose?.Invoke (WebSocketHelpers.ParseCloseCodeEnum (args.Code));
-                MainThreadUtil.Run(() => OnClose?.Invoke (WebSocketHelpers.ParseCloseCodeEnum (args.Code)));
             };
             sharpWebSocket.OnError += (sender, args) =>
             {
                 OnError?.Invoke(args.Message);
-                MainThreadUtil.Run(() => OnError?.Invoke(args.Message));
             };
 
             sharpWebSocket.ConnectAsync();

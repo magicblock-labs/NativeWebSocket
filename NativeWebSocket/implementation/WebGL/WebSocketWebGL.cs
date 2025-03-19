@@ -79,12 +79,16 @@ namespace NativeWebSocket.implementation.WebGL
         }
 
         public Task Connect (bool awaitConnection = true) {
-          _connectionTask = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
-          int ret = WebSocketConnect (instanceId);
+          _connectionTask = new TaskCompletionSource<object>();
+          MainThreadUtil.Run(() =>
+          {
+            int ret = WebSocketConnect(instanceId);
 
-          if (ret < 0)
-            throw WebSocketHelpers.GetErrorMessageFromCode (ret, null);
-          
+            if (ret < 0)
+            {
+              throw WebSocketHelpers.GetErrorMessageFromCode(ret, null);
+            }
+          });
           return awaitConnection ? _connectionTask.Task : Task.CompletedTask;
         }
 
@@ -92,39 +96,48 @@ namespace NativeWebSocket.implementation.WebGL
 	        if (State == WebSocketState.Open)
 		        Close (WebSocketCloseCode.Abnormal);
         }
-        public Task Close () {
-          int ret = WebSocketClose (instanceId, (int) WebSocketCloseCode.Normal, null);
+        public Task Close ()
+        {
+          MainThreadUtil.Run(() =>
+          {
+            int ret = WebSocketClose(instanceId, (int)WebSocketCloseCode.Normal, null);
 
-          if (ret < 0)
-            throw WebSocketHelpers.GetErrorMessageFromCode (ret, null);
-
+            if (ret < 0)
+              throw WebSocketHelpers.GetErrorMessageFromCode(ret, null);
+          });
           return Task.CompletedTask;
         }
 
         public Task Close (WebSocketCloseCode code = WebSocketCloseCode.Normal, string reason = null) {
-          int ret = WebSocketClose (this.instanceId, (int) code, reason);
+          MainThreadUtil.Run(() =>
+          {
+            int ret = WebSocketClose(this.instanceId, (int)code, reason);
 
-          if (ret < 0)
-            throw WebSocketHelpers.GetErrorMessageFromCode (ret, null);
-
+            if (ret < 0)
+              throw WebSocketHelpers.GetErrorMessageFromCode(ret, null);
+          });
           return Task.CompletedTask;
         }
 
         public Task Send (byte[] data) {
-          int ret = WebSocketSend (this.instanceId, data, data.Length);
+          MainThreadUtil.Run(() =>
+          {
+            int ret = WebSocketSend (instanceId, data, data.Length);
 
-          if (ret < 0)
-            throw WebSocketHelpers.GetErrorMessageFromCode (ret, null);
-
+            if (ret < 0)
+              throw WebSocketHelpers.GetErrorMessageFromCode (ret, null);
+          });
+          
           return Task.CompletedTask;
         }
 
         public Task SendText (string message) {
-          int ret = WebSocketSendText (this.instanceId, message);
-
-          if (ret < 0)
-            throw WebSocketHelpers.GetErrorMessageFromCode (ret, null);
-
+          MainThreadUtil.Run(() =>
+          {
+            int ret = WebSocketSendText(instanceId, message);
+            if (ret < 0)
+              throw WebSocketHelpers.GetErrorMessageFromCode (ret, null);
+          });
           return Task.CompletedTask;
         }
 
@@ -159,6 +172,7 @@ namespace NativeWebSocket.implementation.WebGL
         public void DelegateOnOpenEvent ()
         {
           MainThreadUtil.Run(() => _connectionTask.TrySetResult(null));
+          _connectionTask.TrySetResult(null);
           OnOpen?.Invoke ();
         }
 
